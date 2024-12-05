@@ -12,12 +12,14 @@ app.use(express.json());
 // Importar as rotas
 const produtoRoutes = require('./routes/produtos');
 const categoriaRoutes = require('./routes/categorias');
-const movimentacaoRoutes = require('./routes/movimentacoes'); // Importar rotas de movimentações
+const movimentacaoRoutes = require('./routes/movimentacoes');
+const planilhaRoutes = require('./routes/planilhas'); // Importar rotas de planilhas
 
 // Registrar as rotas
 app.use('/api/produtos', produtoRoutes);
 app.use('/api/categorias', categoriaRoutes);
-app.use('/api/movimentacoes', movimentacaoRoutes); // Registrar rotas de movimentações
+app.use('/api/movimentacoes', movimentacaoRoutes);
+app.use('/api/planilhas', planilhaRoutes); // Registrar rotas de planilhas
 
 // Iniciar o servidor
 const PORT = process.env.PORT || 3000;
