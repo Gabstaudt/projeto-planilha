@@ -1,17 +1,17 @@
-// controllers/tarefaController.js
 const Usuario = require('../models/usuario');
 const Tarefa = require('../models/tarefa');
 
 // Função para adicionar uma tarefa
 exports.adicionarTarefa = async (req, res) => {
-    const { titulo, descricao, nomeUsuario } = req.body;
+    const { titulo, descricao, nomeUsuario, data_vencimento } = req.body;
 
     try {
-        // Procurar pelo usuário no banco de dados pelo nome
-        const usuario = await Usuario.findOne({ where: { nome: nomeUsuario } });
+        // Procurar pelo usuário no banco de dados pelo nomeUsuario
+        const usuario = await Usuario.findOne({ where: { nomeUsuario } });
 
+        // Se o usuário não for encontrado, retorne um erro
         if (!usuario) {
-            console.error(`Usuário com nome ${nomeUsuario} não encontrado.`);
+            console.error(`Usuário com nomeUsuario ${nomeUsuario} não encontrado.`);
             return res.status(404).json({ error: 'Usuário não encontrado.' });
         }
 
@@ -21,8 +21,10 @@ exports.adicionarTarefa = async (req, res) => {
         const tarefa = await Tarefa.create({
             titulo,
             descricao,
-            usuario_origem_id: usuario.usuario_id,
-            usuario_destino_id: usuario.usuario_id
+            usuario_origem_id: req.usuario.usuario_id, // Usuário logado que cria a tarefa
+            usuario_destino_id: usuario.usuario_id, // Usuário para quem a tarefa foi enviada
+            data_vencimento,
+            status: 'pendente' // Define o status padrão como "pendente"
         });
 
         console.log('Tarefa criada com sucesso:', tarefa);
@@ -33,6 +35,7 @@ exports.adicionarTarefa = async (req, res) => {
         res.status(500).json({ error: 'Erro ao adicionar tarefa.' });
     }
 };
+
 
 // Função para listar tarefas atribuídas a um usuário específico
 exports.listarTarefasPorUsuario = async (req, res) => {
@@ -76,5 +79,27 @@ exports.listarTarefasPorUsuario = async (req, res) => {
     } catch (error) {
         console.error('Erro ao buscar tarefas:', error);
         res.status(500).json({ error: 'Erro ao buscar tarefas.' });
+    }
+};
+exports.concluirTarefa = async (req, res) => {
+    const { tarefa_id } = req.params;
+
+    try {
+        // Procurar a tarefa pelo ID
+        const tarefa = await Tarefa.findOne({ where: { tarefa_id } });
+
+        if (!tarefa) {
+            console.error(`Tarefa com ID ${tarefa_id} não encontrada.`);
+            return res.status(404).json({ error: 'Tarefa não encontrada.' });
+        }
+
+        // Apagar a tarefa do banco de dados
+        await tarefa.destroy();
+        console.log(`Tarefa com ID ${tarefa_id} foi concluída e removida com sucesso.`);
+        
+        res.status(200).json({ message: 'Tarefa concluída e removida com sucesso.' });
+    } catch (error) {
+        console.error('Erro ao concluir a tarefa:', error);
+        res.status(500).json({ error: 'Erro ao concluir a tarefa.' });
     }
 };
