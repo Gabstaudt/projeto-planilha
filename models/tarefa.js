@@ -1,11 +1,12 @@
 const { DataTypes } = require('sequelize');
 const sequelize = require('../config/database');
+const Usuario = require('./usuario');
 
 const Tarefa = sequelize.define('Tarefa', {
     tarefa_id: {
         type: DataTypes.INTEGER,
-        primaryKey: true,
         autoIncrement: true,
+        primaryKey: true,
     },
     titulo: {
         type: DataTypes.STRING(45),
@@ -30,10 +31,21 @@ const Tarefa = sequelize.define('Tarefa', {
     usuario_destino_id: {
         type: DataTypes.INTEGER,
         allowNull: false,
-    }
+    },
 }, {
     tableName: 'tarefas',
     timestamps: false,
+});
+
+// Relacionamentos entre Tarefa e Usuario
+Tarefa.belongsTo(Usuario, {
+    as: 'usuario_origem',
+    foreignKey: 'usuario_origem_id',
+});
+
+Tarefa.belongsTo(Usuario, {
+    as: 'usuario_destino',
+    foreignKey: 'usuario_destino_id',
 });
 
 module.exports = Tarefa;

@@ -14,7 +14,6 @@ const planilhaRoutes = require('./routes/planilhas');
 const authRoutes = require('./routes/auth'); // Importar rotas de autenticação
 const tarefaRoutes = require('./routes/tarefas'); // Importar rotas de tarefas
 
-
 // Registrar as rotas
 app.use('/api/produtos', produtoRoutes);
 app.use('/api/categorias', categoriaRoutes);
@@ -23,7 +22,8 @@ app.use('/api/planilhas', planilhaRoutes);
 app.use('/api/auth', authRoutes); // Registrar rota de autenticação
 app.use('/api/tarefas', tarefaRoutes); // Registrar rota de tarefas
 
-require('./models/associacoes'); // As associações devem ser importadas após os modelos serem definidos
+// Importar as associações entre os modelos (relacionamentos)
+require('./models/associacoes');
 
 // Iniciar o servidor
 const PORT = process.env.PORT || 3000;
